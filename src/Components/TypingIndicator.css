@@ -1,0 +1,33 @@
+.typing-indicator {
+  font-family: "Exo 2", sans-serif;
+  font-size: 1.4rem;
+  color: #7b8ebc;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2rem;
+}
+
+/* Soft shine / pulse on the Thinking label */
+.typing-text {
+  animation: thinkingPulse 1.6s ease-in-out infinite;
+}
+
+.typing-dots {
+  display: inline-block;
+  min-width: 1.6rem;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+@keyframes thinkingPulse {
+  0%,
+  100% {
+    opacity: 1;
+    text-shadow: 0 0 0 transparent;
+  }
+  50% {
+    opacity: 0.45;
+    text-shadow: 0 0 0.8rem rgba(123, 142, 188, 0.55);
+  }
+}
