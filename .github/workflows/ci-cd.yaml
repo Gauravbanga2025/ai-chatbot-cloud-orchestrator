@@ -9,7 +9,7 @@ on:
 jobs:
   code-quality-and-sast:
     name: Lint, Build & SonarQube SAST Gate
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
   build-and-push-dockerhub:
     name: Build & Push to DockerHub
     needs: code-quality-and-sast
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -74,7 +74,7 @@ jobs:
   container-security-trivy:
     name: DevSecOps Container Vulnerability Scan
     needs: build-and-push-dockerhub
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -92,7 +92,7 @@ jobs:
   gitops-manifest-verification:
     name: Validate GitOps Manifests
     needs: container-security-trivy
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
