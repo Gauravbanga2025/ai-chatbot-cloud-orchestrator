@@ -1,31 +1,36 @@
-# Stage 1: Build the React + Vite Frontend
+# Stage 1: Compile Frontend and Backend
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy dependency manifests & prisma schema
 COPY package*.json ./
 COPY prisma ./prisma/
-
-# Install dependencies including Prisma dev tools
 RUN npm ci
 
-# Copy remaining source code
 COPY . .
-
-# Compile Prisma client + TypeScript + Vite static build
 RUN npm run build
 
-# Stage 2: Hardened Alpine Nginx Server (<30MB)
-FROM nginx:alpine AS runner
-WORKDIR /usr/share/nginx/html
+# Stage 2: Production Container
+FROM node:20-alpine AS runner
+WORKDIR /app
 
-RUN rm -rf ./*
-COPY --from=builder /app/dist .
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+RUN apk add --no-cache nginx
 
-EXPOSE 80
+# Deploy frontend assets
+RUN rm -rf /usr/share/nginx/html/*
+COPY --from=builder /app/dist /usr/share/nginx/html/
+COPY nginx.conf /etc/nginx/http.d/default.conf
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost/ || exit 1
+# Deploy backend server
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules/
+COPY --from=builder /app/dist-server ./dist-server/
+COPY --from=builder /app/server.mjs ./server.mjs
+COPY --from=builder /app/prisma ./prisma/
 
-CMD ["nginx", "-g", "daemon off;"]
+# Run Node backend in background and Nginx in foreground
+RUN printf '#!/bin/sh\nnode server.mjs &\nnginx -g "daemon off;"\n' > /entrypoint.sh && \
+    chmod +x /entrypoint.sh
+
+EXPOSE 80 5000
+
+CMD ["/entrypoint.sh"]

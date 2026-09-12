@@ -8,13 +8,15 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "prisma generate && tsc && vite build",
+    "build": "prisma generate && tsc && tsc -p tsconfig.server.json && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:push": "prisma db push",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "build:server": "tsc -p tsconfig.server.json",
+    "start:server": "node server.mjs"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",
@@ -22,6 +24,8 @@
     "@prisma/client": "^6.19.3",
     "@sentry/node": "^10.70.0",
     "@sentry/react": "^10.70.0",
+    "@types/express": "^5.0.6",
+    "express": "^5.2.1",
     "lucide-react": "^0.577.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

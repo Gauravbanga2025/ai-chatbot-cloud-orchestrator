@@ -1,0 +1,28 @@
+/**
+ * Lazy Node Sentry init for Vercel serverless handlers.
+ * No-op when SENTRY_DSN / VITE_SENTRY_DSN is unset.
+ */
+import * as Sentry from "@sentry/node";
+import { getServerSentryDsn, getTracesSampleRate } from "./env.js";
+import { SENTRY_IGNORE_ERRORS, sentryBeforeSend } from "./filters.js";
+let initialized = false;
+export function initServerSentry() {
+    if (initialized)
+        return;
+    initialized = true;
+    const dsn = getServerSentryDsn();
+    Sentry.init({
+        dsn,
+        enabled: Boolean(dsn),
+        tracesSampleRate: getTracesSampleRate(),
+        ignoreErrors: SENTRY_IGNORE_ERRORS,
+        beforeSend: sentryBeforeSend,
+    });
+}
+/** Capture API failures without changing the HTTP response shape. */
+export function captureApiException(error, tags) {
+    initServerSentry();
+    if (!getServerSentryDsn())
+        return;
+    Sentry.captureException(error, tags ? { tags } : undefined);
+}
