@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: web-runtime
-          image: ai-cloud-orchestrator:v1.0.0
+          image: gauravbanga/ai-cloud-orchestrator:latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
