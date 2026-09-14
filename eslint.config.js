@@ -22,6 +22,9 @@ const tsRecommended = {
 
 export default [
   {
+    ignores: ["dist/**", "dist-server/**", "node_modules/**", "server.mjs"],
+  },
+  {
     ignores: ["dist/**", "node_modules/**", "eslint.config.js"],
   },
   js.configs.recommended,
