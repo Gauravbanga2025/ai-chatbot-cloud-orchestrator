@@ -9,7 +9,7 @@ export const PROVIDER_META: Record<AIProvider, ProviderMeta> = {
   gemini: {
     name: "gemini",
     displayName: "Google Gemini",
-    models: ["gemini-2.5-flash", "gemini-2.5-flash-lite"],
+    models: ["gemini-3.6-flash", "gemini-3.6-flash"],
     icon: "sparkles",
     envKey: "GEMINI_API_KEY",
   },

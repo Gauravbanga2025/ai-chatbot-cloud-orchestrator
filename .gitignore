@@ -27,3 +27,7 @@ build/
 *.log
 .vscode/
 .idea/
+
+.env
+*.log
+pf.log

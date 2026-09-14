@@ -1,34 +1,24 @@
-# Stage 1: Compile Frontend and Backend
-FROM node:20-alpine AS builder
-WORKDIR /app
-
-COPY package*.json ./
-COPY prisma ./prisma/
-RUN npm ci
-
-COPY . .
-RUN npm run build
-
-# Stage 2: Production Container
-FROM node:20-alpine AS runner
+FROM node:20-alpine
 WORKDIR /app
 
 RUN apk add --no-cache nginx
 
-# Deploy frontend assets
+# Deploy static frontend
 RUN rm -rf /usr/share/nginx/html/*
-COPY --from=builder /app/dist /usr/share/nginx/html/
+COPY dist /usr/share/nginx/html/
 COPY nginx.conf /etc/nginx/http.d/default.conf
 
-# Deploy backend server
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules/
-COPY --from=builder /app/dist-server ./dist-server/
-COPY --from=builder /app/server.mjs ./server.mjs
-COPY --from=builder /app/prisma ./prisma/
+# Deploy pre-built backend server
+COPY package*.json ./
+COPY prisma ./prisma/
+COPY dist-server ./dist-server/
+COPY server.mjs ./server.mjs
 
-# Run Node backend in background and Nginx in foreground
-RUN printf '#!/bin/sh\nnode server.mjs &\nnginx -g "daemon off;"\n' > /entrypoint.sh && \
+# Install only minimal runtime dependencies without dev dependencies
+RUN npm ci --omit=dev && npx prisma generate
+
+# Auto-restarting entrypoint for Node + foreground Nginx
+RUN printf '#!/bin/sh\nwhile true; do node server.mjs; sleep 1; done &\nexec nginx -g "daemon off;"\n' > /entrypoint.sh && \
     chmod +x /entrypoint.sh
 
 EXPOSE 80 5000

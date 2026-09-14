@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: web-runtime
-          image: gauravbanga/ai-cloud-orchestrator:latest
+          image: gauravbanga/ai-cloud-orchestrator:v2.0.5
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -35,10 +35,10 @@ spec:
           resources:
             requests:
               cpu: "30m"
-              memory: "32Mi"
+              memory: "512Mi"
             limits:
               cpu: "150m"
-              memory: "64Mi"
+              memory: "512Mi"
           readinessProbe:
             httpGet:
               path: /

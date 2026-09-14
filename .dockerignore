@@ -1,0 +1,11 @@
+node_modules
+npm-debug.log
+.git
+.github
+.scannerwork
+.sonar
+terraform
+k8s
+monitoring
+docs
+src
